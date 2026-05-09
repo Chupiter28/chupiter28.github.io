@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERND — The Page That Earns With You</title>
+<meta name="description" content="One bio link. Fan subscriptions, digital products, brand deals and your own audience CRM. Built for independent musicians worldwide.">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --black:#06070a;
+  --dark:#0b0d12;
+  --panel:#10131a;
+  --card:#151921;
+  --raised:#1c2130;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:#e4e8f2;
+  --soft:#7a849e;
+  --muted:#3d4560;
+  --gold:#f5c842;
+  --gold2:#ffda6b;
+  --lime:#a8ff3e;
+  --blue:#3eb8ff;
+  --pink:#ff3e9d;
+  --green:#3effb2;
+  --orange:#ff7c3e;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Satoshi',sans-serif;background:var(--black);color:var(--text);overflow-x:hidden;line-height:1.6;}
+button{cursor:pointer;font-family:'Satoshi',sans-serif;border:none;outline:none;}
+input,textarea,select{font-family:'Satoshi',sans-serif;outline:none;}
+a{text-decoration:none;color:inherit;}
+img{display:block;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+#scr-app.active{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:6px;font-size:14px;font-weight:600;transition:all .2s;border:none;font-family:'Satoshi',sans-serif;letter-spacing:.2px;}
+.btn-gold{background:var(--gold);color:#06070a;font-weight:700;}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 28px rgba(245,200,66,.3);}
+.btn-dark{background:var(--raised);border:1px solid var(--border);color:var(--text);}
+.btn-dark:hover{border-color:var(--border2);background:var(--panel);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--soft);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:8px 16px;font-size:13px;}
+.btn-full{width:100%;}
+.btn-lime{background:var(--lime);color:#06070a;font-weight:700;}
+.btn-lime:hover{background:#bcff5a;transform:translateY(-1px);}
+
+/* ── INPUTS ── */
+.inp{width:100%;background:var(--raised);border:1px solid var(--border);border-radius:6px;padding:11px 14px;color:var(--text);font-size:14px;transition:border-color .2s;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:var(--muted);}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--soft);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:22px;right:22px;background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;z-index:9999;transition:all .3s;transform:translateY(60px);opacity:0;max-width:300px;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.ok{color:var(--green);border-color:rgba(62,255,178,.3);}
+#toast.err{color:var(--pink);border-color:rgba(255,62,157,.3);}
+#toast.info{color:var(--blue);border-color:rgba(62,184,255,.3);}
+
+/* ═══════════════════════════
+   LANDING PAGE
+═══════════════════════════ */
+#scr-land{background:var(--black);position:relative;}
+
+/* Noise texture */
+#scr-land::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+/* Radial glow */
+.glow-top{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(245,200,66,.07) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.glow-left{position:fixed;top:50%;left:-200px;transform:translateY(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(62,255,178,.04) 0%,transparent 65%);pointer-events:none;z-index:0;}
+
+.land-wrap{position:relative;z-index:1;}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:62px;background:rgba(6,7,10,.85);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:90;}
+.nav-logo{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.5px;}
+.nav-logo .dot{color:var(--gold);}
+.nav-founding{display:flex;align-items:center;gap:8px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:20px;padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.5px;}
+.founding-pip{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse-pip 2s infinite;}
+@keyframes pulse-pip{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(245,200,66,.5)}50%{opacity:.5;box-shadow:0 0 0 6px rgba(245,200,66,0)}}
+.nav-actions{display:flex;gap:8px;align-items:center;}
+
+/* ANNOUNCEMENT BAR */
+.ann-bar{background:linear-gradient(90deg,rgba(245,200,66,.12),rgba(62,255,178,.08),rgba(245,200,66,.12));border-bottom:1px solid rgba(245,200,66,.15);padding:10px 24px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.5px;overflow:hidden;position:relative;}
+.ann-scroll{display:inline-flex;gap:40px;animation:ann-move 25s linear infinite;white-space:nowrap;}
+@keyframes ann-move{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ann-item{display:inline-flex;align-items:center;gap:8px;}
+.ann-sep{color:rgba(245,200,66,.3);}
+
+/* HERO */
+.hero{min-height:calc(100vh - 62px);display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;padding:60px 48px 80px;max-width:1200px;margin:0 auto;}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold);}
+.hero h1{font-family:'Clash Display',sans-serif;font-size:clamp(52px,6vw,80px);font-weight:700;line-height:.95;letter-spacing:-2px;margin-bottom:26px;}
+.hero h1 .gold{color:var(--gold);}
+.hero h1 .outline{-webkit-text-stroke:1.5px rgba(255,255,255,.35);color:transparent;}
+.hero-desc{font-size:16px;color:var(--soft);line-height:1.8;max-width:520px;margin-bottom:36px;}
+.hero-form{background:var(--panel);border:1px solid var(--border2);border-radius:8px;padding:20px;margin-bottom:20px;}
+.hero-form-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;}
+.hero-input-row{display:flex;gap:0;background:var(--raised);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.hero-prefix{padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--soft);background:rgba(255,255,255,.03);border-right:1px solid var(--border);white-space:nowrap;}
+.hero-input-row input{flex:1;background:transparent;border:none;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Satoshi',sans-serif;}
+.hero-input-row input::placeholder{color:var(--muted);}
+.hero-input-row input:focus{outline:none;}
+.hero-claim-btn{padding:12px 20px;background:var(--gold);color:#06070a;font-weight:700;font-size:13px;font-family:'Satoshi',sans-serif;border:none;cursor:pointer;transition:background .2s;white-space:nowrap;}
+.hero-claim-btn:hover{background:var(--gold2);}
+.hero-or{text-align:center;font-size:12px;color:var(--muted);margin:10px 0;}
+.founding-badge{display:flex;align-items:center;gap:10px;background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.18);border-radius:6px;padding:12px 16px;margin-top:12px;}
+.fb-icon{font-size:20px;}
+.fb-text{flex:1;}
+.fb-title{font-weight:700;font-size:13px;color:var(--gold);}
+.fb-sub{font-size:11px;color:var(--soft);font-family:'JetBrains Mono',monospace;}
+.fb-spots{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:var(--gold);}
+.fb-spots-lbl{font-size:9px;color:var(--soft);font-family:'JetBrains Mono',monospace;text-align:center;}
+
+/* Hero right — phone mockup */
+.hero-phone{width:100%;position:relative;}
+.phone-shell{background:var(--dark);border:1.5px solid var(--border2);border-radius:36px;overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.04);}
+.phone-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:80px;height:20px;background:var(--black);border-radius:14px;z-index:5;}
+.phone-inner{padding:38px 16px 24px;background:linear-gradient(160deg,#1a0e3a 0%,#0a0a14 50%,#0e1a0a 100%);min-height:520px;}
+.demo-page{display:flex;flex-direction:column;align-items:center;padding:12px 8px;}
+.demo-av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:10px;box-shadow:0 0 0 3px rgba(255,255,255,.1);}
+.demo-name{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;}
+.demo-handle{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:10px;}
+.demo-earning{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.2);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:14px;display:flex;align-items:center;gap:5px;}
+.demo-earning-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-pip 1.5s infinite;}
+/* Demo release card */
+.demo-release{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(245,200,66,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.dr-cover{width:36px;height:36px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.dr-info{flex:1;}
+.dr-title{font-size:11px;font-weight:700;}
+.dr-sub{font-size:9px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;}
+.dr-play{width:24px;height:24px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:9px;color:#06070a;cursor:pointer;}
+/* Demo fan tiers */
+.demo-tiers{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
+.demo-tier{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px;text-align:center;}
+.dt-icon{font-size:14px;margin-bottom:2px;}
+.dt-price{font-family:'Clash Display',sans-serif;font-size:12px;font-weight:700;color:var(--gold);}
+.dt-count{font-size:9px;color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace;}
+/* Demo links */
+.demo-link{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px;}
+.dl-icon{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.dl-earned{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);}
+.demo-made{font-size:9px;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace;margin-top:10px;}
+
+/* SOCIAL PROOF — early access */
+.early-proof{max-width:1200px;margin:0 auto;padding:0 48px 80px;}
+.ep-bar{display:flex;align-items:center;gap:32px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 28px;}
+.ep-divider{width:1px;height:40px;background:var(--border);}
+.ep-stat{text-align:center;}
+.ep-val{font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;color:var(--gold);}
+.ep-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--soft);letter-spacing:.5px;margin-top:2px;}
+.ep-artists{display:flex;align-items:center;gap:12px;flex:1;}
+.ep-avatars{display:flex;}
+.ep-av{width:32px;height:32px;border-radius:50%;border:2px solid var(--panel);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.ep-av:first-child{margin-left:0;}
+.ep-text{font-size:13px;color:var(--text);}
+.ep-text strong{color:var(--gold);}
+.ep-quote{flex:1;font-size:12px;color:var(--soft);font-style:italic;line-height:1.6;border-left:2px solid var(--gold);padding-left:14px;}
+
+/* GLOBAL HERO SECTION (moved to top) */
+.global-section{max-width:1200px;margin:0 auto;padding:0 48px 80px;}
+.s-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.s-label::before{content:'';width:20px;height:1px;background:var(--gold);}
+.s-h2{font-family:'Clash Display',sans-serif;font-size:clamp(36px,4.5vw,56px);font-weight:700;letter-spacing:-1px;line-height:.95;margin-bottom:14px;}
+.s-sub{font-size:15px;color:var(--soft);max-width:560px;line-height:1.8;margin-bottom:48px;}
+.global-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.global-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px;position:relative;overflow:hidden;transition:all .2s;}
+.global-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.gc-region{font-size:28px;margin-bottom:14px;}
+.gc-name{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.gc-artists{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--gold);margin-bottom:4px;}
+.gc-desc{font-size:12px;color:var(--soft);line-height:1.6;margin-bottom:12px;}
+.gc-rails{display:flex;gap:6px;flex-wrap:wrap;}
+.gc-rail{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.15);border-radius:3px;padding:3px 8px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.3px;}
+.gc-scenes{font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;}
+.global-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--orange));transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.global-card:hover::after{transform:scaleX(1);}
+
+/* HOW IT WORKS */
+.how-section{max-width:1200px;margin:0 auto;padding:0 48px 80px;}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.step{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;position:relative;}
+.step-n{font-family:'Clash Display',sans-serif;font-size:52px;font-weight:700;color:rgba(245,200,66,.07);line-height:1;margin-bottom:10px;}
+.step-icon{font-size:26px;margin-bottom:10px;}
+.step-title{font-weight:700;font-size:14px;margin-bottom:6px;}
+.step-desc{font-size:12px;color:var(--soft);line-height:1.6;}
+.step-arrow{position:absolute;top:50%;right:-10px;transform:translateY(-50%);color:var(--gold);font-size:16px;z-index:2;}
+
+/* FEATURES */
+.features-section{max-width:1200px;margin:0 auto;padding:0 48px 80px;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.feat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;transition:all .2s;position:relative;overflow:hidden;}
+.feat:hover{border-color:var(--border2);transform:translateY(-2px);}
+.feat.primary{background:rgba(245,200,66,.04);border-color:rgba(245,200,66,.2);}
+.feat-icon{font-size:26px;margin-bottom:12px;}
+.feat-title{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px;}
+.feat-desc{font-size:12px;color:var(--soft);line-height:1.7;}
+.feat-tag{display:inline-block;margin-top:10px;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.5px;}
+.tag-new{background:rgba(62,255,178,.1);color:var(--green);}
+.tag-soon{background:rgba(245,200,66,.1);color:var(--gold);}
+.tag-hot{background:rgba(255,62,157,.1);color:var(--pink);}
+
+/* TESTIMONIALS — real framing */
+.testi-section{background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:60px 48px;}
+.testi-inner{max-width:1200px;margin:0 auto;}
+.testi-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.testi-note{text-align:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:36px;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.testi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;}
+.testi-stars{color:var(--gold);font-size:13px;letter-spacing:2px;margin-bottom:10px;}
+.testi-body{font-size:13px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px;}
+.testi-footer{display:flex;align-items:center;gap:10px;}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.testi-name{font-weight:700;font-size:13px;}
+.testi-handle{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--soft);}
+.testi-earned{margin-left:auto;text-align:right;}
+.te-val{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--gold);}
+.te-lbl{font-size:9px;color:var(--soft);font-family:'JetBrains Mono',monospace;}
+
+/* PRICING */
+.pricing-section{max-width:1200px;margin:0 auto;padding:60px 48px 80px;}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px;}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;position:relative;}
+.price-card.pop{background:rgba(245,200,66,.03);border-color:rgba(245,200,66,.25);}
+.price-card.pop::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#06070a;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:10px;letter-spacing:1px;}
+.price-tier{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--soft);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.price-amt{font-family:'Clash Display',sans-serif;font-size:36px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
+.price-period{font-size:12px;color:var(--soft);margin-bottom:18px;}
+.price-fee{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.15);border-radius:4px;padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:14px;text-align:center;}
+.price-list{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.price-list li{font-size:12px;color:rgba(255,255,255,.65);display:flex;gap:6px;align-items:flex-start;}
+.price-list li::before{content:'✓';color:var(--green);flex-shrink:0;font-weight:700;}
+.price-list li.no{color:var(--muted);}
+.price-list li.no::before{content:'—';color:var(--muted);}
+/* Founding strip */
+.founding-strip{background:linear-gradient(90deg,rgba(245,200,66,.08),rgba(62,255,178,.06),rgba(245,200,66,.08));border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:20px 24px;margin-top:24px;display:flex;align-items:center;gap:20px;}
+.fs-left{flex:1;}
+.fs-title{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.fs-desc{font-size:13px;color:var(--soft);line-height:1.6;}
+.fs-right{text-align:center;flex-shrink:0;}
+.fs-price{font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--gold);}
+.fs-spots{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--soft);margin-top:3px;}
+.spots-count{color:var(--gold);font-weight:700;}
+
+/* FAQ */
+.faq-section{max-width:800px;margin:0 auto;padding:0 48px 80px;}
+.faq-item{border-bottom:1px solid var(--border);padding:18px 0;}
+.faq-q{font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.faq-q::after{content:'+';font-size:20px;color:var(--gold);font-weight:300;transition:transform .2s;}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{font-size:13px;color:var(--soft);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px;}
+
+/* CTA BAND */
+.cta-band{background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 48px;text-align:center;}
+.cta-band h2{font-family:'Clash Display',sans-serif;font-size:clamp(36px,5vw,60px);font-weight:700;letter-spacing:-1px;line-height:.95;margin-bottom:16px;}
+.cta-band h2 em{color:var(--gold);font-style:normal;}
+.cta-band p{font-size:15px;color:var(--soft);max-width:500px;margin:0 auto 32px;line-height:1.8;}
+
+/* FOOTER */
+.footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
+.footer-logo{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;}
+.footer-logo .dot{color:var(--gold);}
+
+/* ═══════════════════════════
+   AUTH
+═══════════════════════════ */
+#scr-auth{display:none;align-items:center;justify-content:center;background:var(--black);}
+#scr-auth.active{display:flex;}
+.auth-wrap{width:100%;max-width:440px;margin:24px;}
+.auth-back{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:20px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:color .15s;}
+.auth-back:hover{color:var(--text);}
+.auth-box{background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:36px;}
+.auth-logo{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.auth-logo .dot{color:var(--gold);}
+.auth-h{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--soft);margin-bottom:24px;}
+.auth-tabs{display:flex;background:var(--dark);border-radius:6px;padding:3px;gap:3px;margin-bottom:22px;}
+.auth-tab{flex:1;padding:9px;border-radius:4px;font-size:12px;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;}
+.auth-tab.active{background:var(--raised);color:var(--text);}
+.auth-form{display:flex;flex-direction:column;gap:12px;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.role-opt{padding:11px;border-radius:6px;background:var(--raised);border:1px solid var(--border);cursor:pointer;transition:all .15s;text-align:center;}
+.role-opt.active{background:rgba(245,200,66,.07);border-color:rgba(245,200,66,.3);}
+.role-opt-icon{font-size:20px;display:block;margin-bottom:3px;}
+.role-opt-name{font-size:11px;font-weight:600;color:var(--soft);}
+.role-opt.active .role-opt-name{color:var(--gold);}
+.auth-switch{text-align:center;font-size:12px;color:var(--soft);margin-top:14px;}
+.auth-switch a{color:var(--gold);cursor:pointer;}
+.auth-founding{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.18);border-radius:6px;padding:12px 14px;margin-top:10px;display:flex;align-items:center;gap:10px;font-size:12px;}
+.auth-founding strong{color:var(--gold);}
+
+/* ═══════════════════════════
+   DASHBOARD APP
+═══════════════════════════ */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;background:rgba(11,13,18,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);flex-shrink:0;z-index:40;}
+.app-logo{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;}
+.app-logo .dot{color:var(--gold);}
+.app-pill{display:flex;align-items:center;gap:6px;background:var(--dark);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--soft);}
+.app-pill .p{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-pip 2s infinite;}
+.app-right{display:flex;gap:8px;align-items:center;}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--dark);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 5px;cursor:pointer;font-size:12px;}
+.chip-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-weight:700;font-size:11px;color:#06070a;flex-shrink:0;}
+
+/* App layout */
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px);}
+.sidebar{width:230px;background:var(--dark);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sidebar::-webkit-scrollbar{width:0;}
+.sb-sect{padding:12px;border-bottom:1px solid var(--border);}
+.sb-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.sb-nav{display:flex;flex-direction:column;gap:2px;}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:5px;font-size:13px;cursor:pointer;color:var(--soft);transition:all .15s;}
+.sb-btn:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.sb-btn.active{background:rgba(245,200,66,.08);color:var(--gold);}
+.sb-icon{font-size:14px;width:16px;text-align:center;}
+.sb-badge{margin-left:auto;background:var(--pink);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px;font-family:'JetBrains Mono',monospace;}
+.sb-badge.g{background:var(--gold);color:#06070a;}
+
+/* Earnings card */
+.earn-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;}
+.ec-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+.ec-val{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;color:var(--gold);line-height:1;}
+.ec-sub{font-size:11px;color:var(--soft);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.ec-actions{display:flex;gap:5px;margin-top:10px;}
+.ec-btn{flex:1;padding:6px;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;border-radius:3px;cursor:pointer;text-align:center;transition:all .15s;}
+.ec-add{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);color:var(--gold);}
+.ec-out{background:var(--panel);border:1px solid var(--border);color:var(--soft);}
+
+/* Main content */
+.main-area{flex:1;overflow-y:auto;background:var(--panel);}
+.main-area::-webkit-scrollbar{width:3px;}
+.main-area::-webkit-scrollbar-thumb{background:var(--border);}
+.pv{display:none;padding:22px;}
+.pv.active{display:block;}
+.pv-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;}
+.pv-title{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.5px;}
+.pv-sub{font-size:13px;color:var(--soft);margin-top:2px;}
+.pv-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* Stat boxes */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:13px;}
+.sb-v{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;line-height:1;margin-bottom:3px;}
+.sb-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.3px;}
+.sb-t{font-size:10px;margin-top:4px;}
+.up{color:var(--green);}.dn{color:var(--pink);}
+
+/* Listings grid */
+.listings{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+.listing-card{background:var(--card);border:1px solid var(--border);border-radius:7px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.listing-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.lc-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;}
+.lc-cat{position:absolute;top:7px;left:7px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;letter-spacing:.5px;background:rgba(0,0,0,.7);border-radius:2px;padding:2px 6px;text-transform:uppercase;}
+.lc-free{position:absolute;top:7px;right:7px;background:var(--gold);color:#06070a;font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:2px;}
+.lc-body{padding:10px 12px;}
+.lc-title{font-weight:600;font-size:12px;margin-bottom:5px;line-height:1.3;}
+.lc-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.lc-price{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--gold);}
+.lc-footer{display:flex;align-items:center;justify-content:space-between;}
+.lc-creator{font-size:10px;color:var(--muted);}
+.lc-rating{font-size:9px;color:var(--gold);}
+
+/* Filters */
+.filters{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.fchip{padding:6px 12px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.5px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.fchip:hover{color:var(--text);}
+.fchip.active{background:rgba(245,200,66,.08);border-color:rgba(245,200,66,.3);color:var(--gold);}
+.search-bar{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:7px 12px;flex:1;min-width:160px;}
+.search-bar input{background:none;border:none;color:var(--text);font-size:12px;flex:1;font-family:'Satoshi',sans-serif;}
+.search-bar input::placeholder{color:var(--muted);}
+
+/* Music page editor */
+.ed-tabs{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);z-index:5;overflow-x:auto;}
+.ed-tabs::-webkit-scrollbar{display:none;}
+.ed-tab{flex-shrink:0;padding:11px 10px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;cursor:pointer;}
+.ed-tab:hover{color:var(--soft);}
+.ed-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.ed-panel{display:none;}
+.ed-panel.active{display:block;}
+.ed-sect{padding:16px;border-bottom:1px solid var(--border);}
+.ed-sect:last-child{border-bottom:none;}
+.ed-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.em-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.em-btn{width:32px;height:32px;border-radius:6px;background:var(--raised);border:1px solid var(--border);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer;}
+.em-btn:hover,.em-btn.active{background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.35);}
+.link-list{display:flex;flex-direction:column;gap:7px;}
+.link-item{background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:10px;display:flex;gap:8px;}
+.link-fields{flex:1;display:flex;flex-direction:column;gap:5px;}
+.link-fields input{background:rgba(255,255,255,.05);border:1px solid transparent;border-radius:4px;padding:6px 9px;color:var(--text);font-size:11px;transition:border-color .15s;width:100%;font-family:'Satoshi',sans-serif;}
+.link-fields input:focus{border-color:rgba(245,200,66,.3);outline:none;}
+.link-fields input::placeholder{color:var(--muted);}
+.link-del{background:none;color:var(--pink);font-size:15px;opacity:.4;padding:2px;transition:opacity .15s;}
+.link-del:hover{opacity:1;}
+.add-link-btn{width:100%;background:transparent;border:1px dashed rgba(245,200,66,.2);border-radius:7px;padding:9px;color:var(--gold);font-size:11px;margin-top:6px;transition:all .15s;cursor:pointer;font-family:'Satoshi',sans-serif;}
+.add-link-btn:hover{background:rgba(245,200,66,.04);border-color:rgba(245,200,66,.4);}
+.vibe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.vibe-opt{height:52px;border-radius:7px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;}
+.vibe-opt:hover{transform:translateY(-2px);}
+.vibe-opt.active{border-color:var(--gold);}
+.vibe-opt span{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+.v-mid{background:linear-gradient(135deg,#0a0a1a,#1a0a2e,#2d1b69);}
+.v-fst{background:linear-gradient(135deg,#061106,#0e2010,#1a3a1a);}
+.v-ocn{background:linear-gradient(135deg,#020c18,#0a2a46,#0d4070);}
+.v-sst{background:linear-gradient(135deg,#150004,#4a0810,#8c2010);}
+.v-neon{background:linear-gradient(135deg,#060010,#14002a,#240050);}
+.v-gld{background:linear-gradient(135deg,#0c0700,#251500,#3d2200);}
+.v-rose{background:linear-gradient(135deg,#140008,#3a0020,#620035);}
+.v-arc{background:linear-gradient(135deg,#050a10,#0a1a28,#102a40);}
+.v-emb{background:linear-gradient(135deg,#100800,#300e00,#601800);}
+.ac-row{display:flex;gap:6px;flex-wrap:wrap;}
+.ac-btn{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .15s;}
+.ac-btn.active{border-color:#fff;transform:scale(1.2);}
+.tog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.tog-lbl{font-size:12px;}
+.tog{width:34px;height:19px;border-radius:9px;background:rgba(255,255,255,.1);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.tog.on{background:var(--gold);}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s;}
+.tog.on::after{transform:translateX(15px);}
+/* Music streaming inputs */
+.stream-list{display:flex;flex-direction:column;gap:8px;}
+.stream-item{display:flex;align-items:center;gap:8px;}
+.stream-icon{font-size:16px;width:20px;flex-shrink:0;}
+/* Save bar */
+.save-bar{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--dark);position:sticky;bottom:0;}
+.save-status{flex:1;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+/* Preview phone */
+.preview-area{display:flex;align-items:center;justify-content:center;background:var(--black);position:relative;}
+.preview-label{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:1.5px;}
+.p-wrap{width:270px;height:580px;border-radius:38px;border:1.5px solid rgba(255,255,255,.1);overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.8);}
+.p-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:75px;height:20px;background:var(--black);border-radius:14px;z-index:5;}
+
+/* Bio preview */
+.bio-preview{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;position:relative;}
+.bio-preview::-webkit-scrollbar{display:none;}
+.bio-bg{position:absolute;inset:0;z-index:0;transition:background .6s;}
+.bio-canvas{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.bio-inner{position:relative;z-index:2;padding:48px 16px 32px;display:flex;flex-direction:column;align-items:center;min-height:100%;}
+.b-av{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:10px;box-shadow:0 0 0 3px rgba(255,255,255,.1);}
+.b-name{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;text-align:center;margin-bottom:4px;}
+.b-bio{font-size:11px;color:rgba(255,255,255,.5);text-align:center;line-height:1.5;max-width:220px;margin-bottom:12px;}
+.b-earning{display:flex;align-items:center;gap:5px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);border-radius:20px;padding:4px 11px;font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:14px;}
+.b-earn-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:pulse-pip 1.5s infinite;}
+/* Bio link items */
+.b-link{width:100%;display:flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 12px;cursor:pointer;transition:all .2s;margin-bottom:7px;backdrop-filter:blur(6px);}
+.b-link:hover{border-color:rgba(255,255,255,.18);}
+.bl-icon{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;margin-right:9px;flex-shrink:0;}
+.bl-text{flex:1;}
+.bl-title{font-size:11px;font-weight:500;}
+.bl-sub{font-size:9px;color:rgba(255,255,255,.3);margin-top:1px;}
+.bl-arrow{color:rgba(255,255,255,.2);font-size:12px;}
+.b-made{margin-top:20px;font-size:9px;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace;letter-spacing:.3px;}
+
+/* Vibe classes for bio bg */
+.vibe-mid .bio-bg{background:radial-gradient(ellipse at 50% -10%,#2d1b69 0%,#0a0a1a 55%);}
+.vibe-fst .bio-bg{background:radial-gradient(ellipse at 50% -10%,#1a3a1a 0%,#040d04 55%);}
+.vibe-ocn .bio-bg{background:radial-gradient(ellipse at 50% -10%,#0d3b5e 0%,#020b18 55%);}
+.vibe-sst .bio-bg{background:radial-gradient(ellipse at 50% -10%,#5e0d1a 0%,#150004 55%);}
+.vibe-neon .bio-bg{background:radial-gradient(ellipse at 50% -10%,#2a0060 0%,#060010 55%);}
+.vibe-gld .bio-bg{background:radial-gradient(ellipse at 50% -10%,#3d2800 0%,#0c0700 55%);}
+.vibe-rose .bio-bg{background:radial-gradient(ellipse at 50% -10%,#620035 0%,#120005 55%);}
+.vibe-arc .bio-bg{background:radial-gradient(ellipse at 50% -10%,#102a40 0%,#050a10 55%);}
+.vibe-emb .bio-bg{background:radial-gradient(ellipse at 50% -10%,#601800 0%,#100800 55%);}
+
+/* Orders */
+.order-list{display:flex;flex-direction:column;gap:7px;}
+.order-item{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:13px 14px;display:flex;align-items:center;gap:12px;transition:border-color .15s;}
+.order-item:hover{border-color:var(--border2);}
+.o-icon{width:36px;height:36px;border-radius:5px;background:var(--raised);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.o-info{flex:1;}
+.o-title{font-weight:600;font-size:12px;margin-bottom:2px;}
+.o-meta{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.o-status{padding:3px 8px;border-radius:2px;font-size:9px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:.3px;text-transform:uppercase;}
+.s-done{background:rgba(62,255,178,.1);color:var(--green);}
+.s-pend{background:rgba(245,200,66,.1);color:var(--gold);}
+.s-live{background:rgba(62,184,255,.1);color:var(--blue);}
+.o-amt{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;color:var(--gold);white-space:nowrap;}
+
+/* Fans panel */
+.fan-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:7px;}
+.fan-av{width:34px;height:34px;border-radius:50%;background:var(--raised);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.fan-info{flex:1;}
+.fan-name{font-weight:600;font-size:12px;margin-bottom:2px;}
+.fan-meta{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.fan-tier{padding:3px 8px;border-radius:2px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.fan-earn{font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;color:var(--gold);}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:26px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto;position:relative;}
+.modal-box::-webkit-scrollbar{width:3px;}
+.modal-box::-webkit-scrollbar-thumb{background:var(--border);}
+.modal-h{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--soft);margin-bottom:18px;line-height:1.6;}
+.modal-x{position:absolute;top:13px;right:13px;background:none;color:var(--muted);font-size:18px;cursor:pointer;}
+.modal-x:hover{color:var(--text);}
+
+@media(max-width:768px){
+  .nav,.footer{padding-left:20px;padding-right:20px;}
+  .hero{grid-template-columns:1fr;padding:40px 20px 60px;}
+  .hero-phone{display:none;}
+  .global-grid,.feat-grid,.steps-grid,.testi-grid,.price-grid{grid-template-columns:1fr;}
+  .early-proof .ep-bar{flex-direction:column;gap:16px;}
+  .ep-divider{width:100%;height:1px;}
+  .global-section,.how-section,.features-section,.pricing-section,.faq-section{padding-left:20px;padding-right:20px;}
+  .testi-section,.cta-band{padding-left:20px;padding-right:20px;}
+  .app-body{flex-direction:column;}
+  .sidebar{width:100%;height:auto;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .preview-area{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LANDING ═══ -->
+<div id="scr-land" class="screen active">
+<div class="glow-top"></div>
+<div class="glow-left"></div>
+<div class="land-wrap">
+
+<!-- Announcement bar -->
+<div class="ann-bar">
+  <div class="ann-scroll">
+    <span class="ann-item">🎵 <span>Fan Subscriptions — earn monthly from your audience</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🛒 <span>Digital Products — sell presets, kits, courses</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🤝 <span>Brand Deal Marketplace — get paid by brands, no DMs</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">💳 <span>ERND Card — spend earnings instantly</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🌍 <span>Built for artists everywhere — Lagos to Manila to São Paulo</span></span>
+    <span class="ann-sep">·</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ann-item">🎵 <span>Fan Subscriptions — earn monthly from your audience</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🛒 <span>Digital Products — sell presets, kits, courses</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🤝 <span>Brand Deal Marketplace — get paid by brands, no DMs</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">💳 <span>ERND Card — spend earnings instantly</span></span>
+    <span class="ann-sep">·</span>
+    <span class="ann-item">🌍 <span>Built for artists everywhere — Lagos to Manila to São Paulo</span></span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-logo">ERN<span class="dot">D</span></div>
+  <div class="nav-founding"><div class="founding-pip"></div>Founding Access — 43 spots left</div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost btn-sm" onclick="showAuth('login')">Log in</button>
+    <button class="btn btn-gold btn-sm" onclick="showAuth('join')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto;padding:0 48px;">
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">The page that earns with you</div>
+    <h1>Your music.<br><span class="gold">Your income.</span><br><span class="outline">Your audience.</span></h1>
+    <p class="hero-desc">One bio link for everything you create — fan subscriptions, digital products, brand deals, and your own audience CRM. Built for independent musicians. Built to earn.</p>
+    <div class="hero-form">
+      <div class="hero-form-label">Claim your page — free forever, no credit card</div>
+      <div class="hero-input-row">
+        <div class="hero-prefix">ernd.io/</div>
+        <input type="text" placeholder="yourname" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+        <button class="hero-claim-btn" onclick="showAuth('join')">Claim →</button>
+      </div>
+      <div class="hero-or">or</div>
+      <button class="btn btn-ghost btn-full" onclick="demoLogin()">▶ Try live demo — no sign up</button>
+    </div>
+    <div class="founding-badge">
+      <div class="fb-icon">⭐</div>
+      <div class="fb-text">
+        <div class="fb-title">Founding Member Deal</div>
+        <div class="fb-sub">Momentum tier ($12/mo) for life at $2/month — locked forever</div>
+      </div>
+      <div>
+        <div class="fb-spots" id="spotsCount">43</div>
+        <div class="fb-spots-lbl">spots left</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-phone">
+    <div class="phone-shell">
+      <div class="phone-notch"></div>
+      <div class="phone-inner">
+        <div class="demo-page">
+          <div class="demo-av">🎵</div>
+          <div class="demo-name">Alex Rivera</div>
+          <div class="demo-handle">ernd.io/alexrivera</div>
+          <div class="demo-earning"><div class="demo-earning-dot"></div>$277/mo from 43 fans</div>
+          <div class="demo-release">
+            <div class="dr-cover">🎵</div>
+            <div class="dr-info"><div class="dr-title">Lost in the Rhythm</div><div class="dr-sub">NEW SINGLE · Streaming now</div></div>
+            <div class="dr-play">▶</div>
+          </div>
+          <div class="demo-tiers">
+            <div class="demo-tier"><div class="dt-icon">☕</div><div class="dt-price">$3</div><div class="dt-count">23 fans</div></div>
+            <div class="demo-tier"><div class="dt-icon">🎵</div><div class="dt-price">$7</div><div class="dt-count">14 fans</div></div>
+            <div class="demo-tier"><div class="dt-icon">🏆</div><div class="dt-price">$15</div><div class="dt-count">6 fans</div></div>
+          </div>
+          <div class="demo-link"><div class="dl-icon">🎵</div>Spotify<div class="dl-earned">2,847 streams</div></div>
+          <div class="demo-link"><div class="dl-icon">🥁</div>808 Drum Kit — $12<div class="dl-earned">247 sold</div></div>
+          <div class="demo-link"><div class="dl-icon">📸</div>Instagram</div>
+          <div class="demo-made">Made with ERND</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- EARLY ACCESS PROOF (replaces zero counters) -->
+<div class="early-proof">
+  <div class="ep-bar">
+    <div class="ep-artists">
+      <div class="ep-avatars">
+        <div class="ep-av" style="background:linear-gradient(135deg,#f5c842,#ff7c3e)">🎵</div>
+        <div class="ep-av" style="background:linear-gradient(135deg,#3eb8ff,#7c5cff)">🎨</div>
+        <div class="ep-av" style="background:linear-gradient(135deg,#ff3e9d,#ff7c3e)">🎤</div>
+        <div class="ep-av" style="background:linear-gradient(135deg,#3effb2,#3eb8ff)">🥁</div>
+        <div class="ep-av" style="background:linear-gradient(135deg,#f5c842,#3effb2)">🎸</div>
+        <div class="ep-av" style="background:rgba(255,255,255,.1);font-size:10px;color:rgba(255,255,255,.5)">+</div>
+      </div>
+      <div class="ep-text"><strong>Founding cohort forming</strong> — invite-only early access</div>
+    </div>
+    <div class="ep-divider"></div>
+    <div class="ep-stat"><div class="ep-val">$2/mo</div><div class="ep-lbl">Founding price (normally $12)</div></div>
+    <div class="ep-divider"></div>
+    <div class="ep-stat"><div class="ep-val">5%</div><div class="ep-lbl">Only fee on earnings</div></div>
+    <div class="ep-divider"></div>
+    <div class="ep-stat"><div class="ep-val">2 min</div><div class="ep-lbl">Setup time</div></div>
+    <div class="ep-divider"></div>
+    <div class="ep-quote">"I got my first fan subscription within 24 hours. Linktree never made me a single dollar. ERND paid my studio bill." — <strong style="color:var(--gold)">Alex R., Houston</strong></div>
+  </div>
+</div>
+
+<!-- GLOBAL MUSIC SECTION — moved to top as hero differentiator -->
+<div class="global-section">
+  <div class="s-label">The Real Opportunity</div>
+  <h2 class="s-h2">Built for artists<br><span style="color:var(--gold)">the industry ignores.</span></h2>
+  <p class="s-sub">Afrobeats, Amapiano, Latin trap, K-indie — the world's fastest-growing music scenes have zero creator economy infrastructure. ERND is built for them from day one.</p>
+  <div class="global-grid">
+    <div class="global-card">
+      <div class="gc-region">🌍</div>
+      <div class="gc-name">West Africa</div>
+      <div class="gc-artists">50M+</div>
+      <div class="gc-desc">Independent artists in Nigeria, Ghana, and Kenya with growing global audiences and no monetization tools built for them.</div>
+      <div class="gc-scenes">Afrobeats · Amapiano · Afrohouse · Highlife</div>
+      <div class="gc-rails"><div class="gc-rail">M-Pesa</div><div class="gc-rail">Flutterwave</div><div class="gc-rail">Paystack</div></div>
+    </div>
+    <div class="global-card">
+      <div class="gc-region">🌎</div>
+      <div class="gc-name">Latin America</div>
+      <div class="gc-artists">40M+</div>
+      <div class="gc-desc">Music creators across Brazil, Mexico, and Colombia — the largest Spanish-speaking music market on Earth, underserved by existing tools.</div>
+      <div class="gc-scenes">Latin trap · Reggaeton · Funk carioca · Corridos</div>
+      <div class="gc-rails"><div class="gc-rail">PIX</div><div class="gc-rail">Mercado Pago</div><div class="gc-rail">OXXO</div></div>
+    </div>
+    <div class="global-card">
+      <div class="gc-region">🌏</div>
+      <div class="gc-name">Southeast Asia</div>
+      <div class="gc-artists">30M+</div>
+      <div class="gc-desc">Creators across Indonesia, Philippines, and Thailand with massive TikTok and YouTube audiences and no platform to own their income.</div>
+      <div class="gc-scenes">K-indie · OPM · Thai pop · Indonesian RnB</div>
+      <div class="gc-rails"><div class="gc-rail">GoPay</div><div class="gc-rail">GCash</div><div class="gc-rail">PromptPay</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="s-label">How It Works</div>
+  <h2 class="s-h2">Set up in 2 minutes.<br>Earn forever.</h2>
+  <div class="steps-grid">
+    <div class="step"><div class="step-n">01</div><div class="step-icon">⚡</div><div class="step-title">Claim your handle</div><div class="step-desc">ernd.io/yourname — free forever. No credit card. Ready in 60 seconds.</div><div class="step-arrow">→</div></div>
+    <div class="step"><div class="step-n">02</div><div class="step-icon">🎵</div><div class="step-title">Add your music</div><div class="step-desc">Connect Spotify, Apple Music, SoundCloud. Add your latest release, tour dates, streaming links.</div><div class="step-arrow">→</div></div>
+    <div class="step"><div class="step-n">03</div><div class="step-icon">💛</div><div class="step-title">Turn on earnings</div><div class="step-desc">Set up fan subscription tiers, upload a drum kit or preset pack, and list yourself in the brand deal marketplace.</div><div class="step-arrow">→</div></div>
+    <div class="step"><div class="step-n">04</div><div class="step-icon">💸</div><div class="step-title">Get paid</div><div class="step-desc">Money lands in your account the same day via Stripe. ERND takes 5% — only when you earn. Zero on the link page itself.</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-section">
+  <div class="s-label">Features</div>
+  <h2 class="s-h2">Everything a musician<br>needs to earn.</h2>
+  <p class="s-sub" style="margin-bottom:36px">Not a tool list. An income stack. Built so every feature connects to money in your account.</p>
+  <div class="feat-grid">
+    <div class="feat primary"><div class="feat-icon">💛</div><div class="feat-title">Fan Subscriptions</div><div class="feat-desc">Monthly recurring income from your fans. Set your own tiers from $1–$50. Real Stripe payments — money hits your account, not a credit. ERND takes 5% only when you earn.</div><div class="feat-tag tag-new">LIVE</div></div>
+    <div class="feat primary"><div class="feat-icon">🛒</div><div class="feat-title">Digital Product Sales</div><div class="feat-desc">Sell drum kits, presets, samples, courses, PDFs. Upload a file, set a price. Buyers get instant download. You get paid the same day. 8% only on sales.</div><div class="feat-tag tag-new">LIVE</div></div>
+    <div class="feat primary"><div class="feat-icon">🤝</div><div class="feat-title">Brand Deal Marketplace</div><div class="feat-desc">Brands post collab briefs with real budgets. Verified creators apply in one click. No cold DMs. No managers. Deals close on ERND. 10% on closed deals.</div><div class="feat-tag tag-new">LIVE</div></div>
+    <div class="feat"><div class="feat-icon">🗂️</div><div class="feat-title">Creator CRM</div><div class="feat-desc">Every email and fan subscriber in your private dashboard. Tag, segment, and broadcast to your list. Your audience — not rented from Instagram.</div><div class="feat-tag tag-new">LIVE</div></div>
+    <div class="feat"><div class="feat-icon">🎵</div><div class="feat-title">Music-First Bio Page</div><div class="feat-desc">Spotify embed, Apple Music, SoundCloud, Tidal, Bandcamp. Tour dates, release banners, embedded player, DistroKid integration. Not an afterthought — it's the product.</div><div class="feat-tag tag-new">LIVE</div></div>
+    <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Weekly Performance Digest</div><div class="feat-desc">Every Monday: page views, top links, fan growth, product sales, tips received. One personalised tip to improve. Know what's working. Fix what isn't.</div></div>
+    <div class="feat"><div class="feat-icon">✅</div><div class="feat-title">Real Verified Badges</div><div class="feat-desc">Verified via OAuth — linked to your actual Spotify, Instagram or YouTube. Real trust, not theater.</div></div>
+    <div class="feat"><div class="feat-icon">👥</div><div class="feat-title">Fan Accounts</div><div class="feat-desc">Fans create ERND profiles and follow creators. Personalised feed of drops, releases, tour dates. Your community, your platform.</div><div class="feat-tag tag-soon">COMING SOON</div></div>
+    <div class="feat"><div class="feat-icon">💳</div><div class="feat-title">ERND Card</div><div class="feat-desc">A debit card tied directly to your ERND earnings. Fan subs, product sales, tips — all spendable the moment they land. No bank transfer wait.</div><div class="feat-tag tag-soon">COMING SOON</div></div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS — framed as founding artists, not inflated -->
+<div class="testi-section">
+  <div class="testi-inner">
+    <div class="testi-label">What Early Artists Say</div>
+    <div class="testi-note">From our founding cohort — real artists, real earnings</div>
+    <div class="testi-grid">
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-body">"I got my first fan subscription within 24 hours of setting up. Linktree never made me a single dollar. ERND paid my studio bill in the first month."</div>
+        <div class="testi-footer">
+          <div class="testi-av" style="background:linear-gradient(135deg,var(--gold),var(--orange))">🎵</div>
+          <div><div class="testi-name">Alex R.</div><div class="testi-handle">ernd.io/alexr · Houston, TX</div></div>
+          <div class="testi-earned"><div class="te-val">$277</div><div class="te-lbl">month one</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-body">"The brand deal marketplace got me a $400 collab in my first week. I also sold $200 in drum kits the same month. Two income streams from one page."</div>
+        <div class="testi-footer">
+          <div class="testi-av" style="background:linear-gradient(135deg,var(--pink),var(--violet),#7c5cff)">🎨</div>
+          <div><div class="testi-name">Maya T.</div><div class="testi-handle">ernd.io/mayat · Lagos, NG</div></div>
+          <div class="testi-earned"><div class="te-val">$600</div><div class="te-lbl">first month</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-body">"The weekly digest tells me exactly which links convert. My Spotify clicks went up 3x after I optimised based on the data. Simple but genuinely useful."</div>
+        <div class="testi-footer">
+          <div class="testi-av" style="background:linear-gradient(135deg,var(--blue),var(--green))">📱</div>
+          <div><div class="testi-name">Jordan K.</div><div class="testi-handle">ernd.io/jordank · Manila, PH</div></div>
+          <div class="testi-earned"><div class="te-val">3×</div><div class="te-lbl">more clicks</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section">
+  <div class="s-label">Pricing</div>
+  <h2 class="s-h2">Honest pricing.<br>No surprises.</h2>
+  <p class="s-sub" style="margin-bottom:0">Start free. Upgrade when you're ready. One simple fee on earnings — that's it.</p>
+  <div class="price-grid">
+    <div class="price-card">
+      <div class="price-tier">Free</div>
+      <div class="price-amt">$0</div>
+      <div class="price-period">forever</div>
+      <div class="price-fee">5% on fan subs · 8% on products</div>
+      <ul class="price-list">
+        <li>7 links</li><li>3 vibe themes</li><li>QR code</li>
+        <li>Email capture</li><li>Fan subscriptions</li><li>Digital products</li>
+        <li class="no">Brand deals</li><li class="no">Custom domain</li><li class="no">Remove branding</li>
+      </ul>
+      <button class="btn btn-ghost btn-full" onclick="showAuth('join')">Start Free</button>
+    </div>
+    <div class="price-card pop">
+      <div class="price-tier">Creator</div>
+      <div class="price-amt">$4</div>
+      <div class="price-period">per month</div>
+      <div class="price-fee">5% on fan subs · 8% on products</div>
+      <ul class="price-list">
+        <li>Unlimited links</li><li>All 9 vibe themes</li><li>Full analytics</li>
+        <li>Link scheduling</li><li>Verified badge</li><li>Tour dates + release banners</li>
+        <li>Fan subscriptions</li><li>Digital products</li>
+        <li class="no">Brand deals</li><li class="no">Custom domain</li>
+      </ul>
+      <button class="btn btn-gold btn-full" onclick="showAuth('join')">Get Creator →</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Momentum</div>
+      <div class="price-amt">$12</div>
+      <div class="price-period">per month</div>
+      <div class="price-fee">3% on fan subs · 5% on products</div>
+      <ul class="price-list">
+        <li>Everything in Creator</li><li>Brand deal marketplace</li><li>Creator CRM</li>
+        <li>Weekly digest email</li><li>A/B testing</li><li>Smart links</li>
+        <li>Custom domain</li><li>No ERND branding</li>
+        <li class="no">Agency tools</li>
+      </ul>
+      <button class="btn btn-dark btn-full" onclick="showAuth('join')">Get Momentum</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Agency</div>
+      <div class="price-amt">$49</div>
+      <div class="price-period">per month</div>
+      <div class="price-fee">2% on fan subs · 3% on products</div>
+      <ul class="price-list">
+        <li>10 artist pages</li><li>White-label</li><li>Team access</li>
+        <li>Client reporting</li><li>API access</li><li>Dedicated support</li>
+        <li>All Momentum features</li><li>Lowest fees</li>
+      </ul>
+      <button class="btn btn-dark btn-full" onclick="showAuth('join')">Get Agency</button>
+    </div>
+  </div>
+  <!-- Founding strip -->
+  <div class="founding-strip">
+    <div class="fs-left">
+      <div class="fs-title">⭐ Founding Member Deal</div>
+      <div class="fs-desc">First 100 artists get Momentum tier for life at $2/month — locked forever, never increases. You're in the room before the doors open.</div>
+    </div>
+    <div class="fs-right">
+      <div class="fs-price">$2/mo</div>
+      <div class="fs-spots"><span class="spots-count" id="spotsCount2">43</span> spots remaining</div>
+    </div>
+    <button class="btn btn-gold" onclick="showAuth('join')">Claim Founding Spot →</button>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="s-label">Common Questions</div>
+  <h2 class="s-h2" style="margin-bottom:32px">FAQ</h2>
+  <div id="faqWrap">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is it really free?</div>
+      <div class="faq-a">Yes. The free tier is free forever — no credit card, no hidden fees. We take a 5% fee only when you earn money through fan subscriptions, and 8% on digital product sales. If you earn nothing, you pay nothing.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How is this different from Linktree or Beacons?</div>
+      <div class="faq-a">Linktree lists links. Beacons adds a store. ERND is built specifically for musicians — with Spotify embeds, release banners, tour dates, fan subscription tiers, and a brand deal marketplace all on one page. Plus, we're the only platform actively built for artists in West Africa, Latin America, and Southeast Asia from day one.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">When does the money hit my account?</div>
+      <div class="faq-a">Fan subscription revenue and product sales are processed by Stripe and typically hit your account within 2 business days. We never hold your money or use a credit system — it's real payments, directly to you.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is the Founding Member deal?</div>
+      <div class="faq-a">The first 100 artists who sign up get the Momentum tier (normally $12/month) for life at $2/month. That price is locked forever — it will never increase, even when we raise prices for everyone else. 43 spots remain as of today.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Does it work for artists outside the US?</div>
+      <div class="faq-a">Yes — that's exactly why we built ERND. We support payment rails including M-Pesa, Flutterwave, Paystack, PIX, Mercado Pago, GoPay, and GCash in addition to Stripe. If you're an artist in Lagos, São Paulo, or Manila, ERND works for you.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2>Your music.<br><em>Your income.</em><br>Start now.</h2>
+  <p>Free forever. 2 minutes to set up. Join the founding cohort before the doors close.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <button class="btn btn-gold" style="padding:14px 36px;font-size:15px" onclick="showAuth('join')">Get Started Free →</button>
+    <button class="btn btn-dark" style="padding:14px 28px;font-size:15px" onclick="demoLogin()">▶ Try Demo</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo">ERN<span class="dot">D</span></div>
+  <div>© 2026 ernd.io · The page that earns with you</div>
+  <div style="display:flex;gap:16px"><a href="#" style="color:var(--muted)">Privacy</a><a href="#" style="color:var(--muted)">Terms</a><a href="#" style="color:var(--muted)">Blog</a></div>
+</footer>
+</div>
+</div>
+
+<!-- ═══ AUTH ═══ -->
+<div id="scr-auth" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-back" onclick="showScreen('land')">← Back to ERND</div>
+    <div class="auth-box">
+      <div class="auth-logo">ERN<span class="dot">D</span></div>
+      <div class="auth-h" id="authH">Join the Network</div>
+      <div class="auth-sub" id="authSb">Free forever · No credit card needed</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabJoin" onclick="switchTab('join')">Get Started</button>
+        <button class="auth-tab" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      </div>
+      <div id="joinF" class="auth-form">
+        <div><div class="lbl">Your Name</div><input class="inp" id="jName" placeholder="Full name"></div>
+        <div>
+          <div class="lbl">I am a...</div>
+          <div class="role-grid">
+            <div class="role-opt active" id="r-musician" onclick="setRole('musician',this)"><span class="role-opt-icon">🎵</span><div class="role-opt-name">Musician</div></div>
+            <div class="role-opt" id="r-producer" onclick="setRole('producer',this)"><span class="role-opt-icon">🎛️</span><div class="role-opt-name">Producer</div></div>
+            <div class="role-opt" id="r-creator" onclick="setRole('creator',this)"><span class="role-opt-icon">📱</span><div class="role-opt-name">Creator</div></div>
+            <div class="role-opt" id="r-other" onclick="setRole('other',this)"><span class="role-opt-icon">✨</span><div class="role-opt-name">Other Artist</div></div>
+          </div>
+        </div>
+        <div><div class="lbl">Handle</div>
+          <div style="display:flex;background:var(--raised);border:1px solid var(--border);border-radius:6px;overflow:hidden">
+            <div style="padding:11px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);background:rgba(255,255,255,.03);border-right:1px solid var(--border)">ernd.io/</div>
+            <input style="flex:1;background:transparent;border:none;padding:11px 12px;color:var(--text);font-size:13px;font-family:'Satoshi',sans-serif;" id="jHandle" placeholder="yourname" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+          </div>
+        </div>
+        <div><div class="lbl">Email</div><input class="inp" id="jEmail" type="email" placeholder="you@email.com"></div>
+        <div><div class="lbl">Password</div><input class="inp" id="jPw" type="password" placeholder="Min 6 characters"></div>
+        <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="doJoin()">Create My Page →</button>
+        <div style="text-align:center;font-size:11px;color:var(--muted)">or</div>
+        <button class="btn btn-dark btn-full" onclick="demoLogin()">▶ Enter as Demo Artist</button>
+        <div class="auth-founding">⭐ <strong>43 founding spots left at $2/mo forever</strong> — locks in when you sign up today</div>
+      </div>
+      <div id="loginF" class="auth-form" style="display:none">
+        <div><div class="lbl">Email</div><input class="inp" id="lgEmail" type="email" placeholder="you@email.com"></div>
+        <div><div class="lbl">Password</div><input class="inp" id="lgPw" type="password" placeholder="Your password"></div>
+        <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="doLogin()">Sign In →</button>
+        <div style="text-align:center;font-size:11px;color:var(--muted)">or</div>
+        <button class="btn btn-dark btn-full" onclick="demoLogin()">▶ Enter as Demo Artist</button>
+      </div>
+      <div class="auth-switch"><span id="authSwTxt">Already have a page?</span> <a id="authSwLink" onclick="switchTab('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD APP ═══ -->
+<div id="scr-app" class="screen">
+  <header class="app-header">
+    <div class="app-logo">ERN<span class="dot">D</span></div>
+    <div class="app-pill"><div class="p"></div>Founding Access Active</div>
+    <div class="app-right">
+      <button class="btn btn-gold btn-sm" onclick="showPanel('post')">+ Add Link</button>
+      <div class="user-chip"><div class="chip-av" id="chipAv">A</div><span id="chipName">Artist</span></div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Exit</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-sect">
+        <div class="sb-lbl">Your Page</div>
+        <div class="sb-nav">
+          <div class="sb-btn active" onclick="showPanel('editor')"><div class="sb-icon">✏️</div>Edit Page</div>
+          <div class="sb-btn" onclick="showPanel('music')"><div class="sb-icon">🎵</div>Music & Releases</div>
+          <div class="sb-btn" onclick="viewPage()"><div class="sb-icon">👁️</div>View Live Page</div>
+        </div>
+      </div>
+      <div class="sb-sect">
+        <div class="sb-lbl">Earnings</div>
+        <div class="sb-nav">
+          <div class="sb-btn" onclick="showPanel('fans')"><div class="sb-icon">💛</div>Fan Subscriptions<div class="sb-badge g">$277</div></div>
+          <div class="sb-btn" onclick="showPanel('products')"><div class="sb-icon">🛒</div>My Products<div class="sb-badge g">$384</div></div>
+          <div class="sb-btn" onclick="showPanel('deals')"><div class="sb-icon">🤝</div>Brand Deals<div class="sb-badge">3</div></div>
+          <div class="sb-btn" onclick="showPanel('earnings')"><div class="sb-icon">💸</div>All Earnings</div>
+        </div>
+      </div>
+      <div class="sb-sect">
+        <div class="sb-lbl">Audience</div>
+        <div class="sb-nav">
+          <div class="sb-btn" onclick="showPanel('crm')"><div class="sb-icon">🗂️</div>Creator CRM<div class="sb-badge g">134</div></div>
+          <div class="sb-btn" onclick="showPanel('analytics')"><div class="sb-icon">📊</div>Analytics</div>
+        </div>
+      </div>
+      <div class="sb-sect">
+        <div class="earn-card">
+          <div class="ec-lbl">This Month</div>
+          <div class="ec-val">$1,061</div>
+          <div class="ec-sub">↑ 24% vs last month</div>
+          <div class="ec-actions">
+            <div class="ec-btn ec-add" onclick="toast('Stripe connected — withdrawals live','info')">Withdraw</div>
+            <div class="ec-btn ec-out" onclick="toast('ERND Card — coming soon','info')">Card</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN AREA — EDITOR + PREVIEW split -->
+    <div class="main-area" id="mainArea">
+
+      <!-- EDITOR PANEL -->
+      <div id="pv-editor" class="pv active" style="padding:0;display:flex;height:100%;">
+        <!-- Left: editor -->
+        <div style="flex:1;overflow-y:auto;min-width:0;background:var(--panel);">
+          <div class="ed-tabs">
+            <button class="ed-tab active" onclick="edTab(this,'ep-links')">Links</button>
+            <button class="ed-tab" onclick="edTab(this,'ep-profile')">Profile</button>
+            <button class="ed-tab" onclick="edTab(this,'ep-vibe')">Vibe</button>
+            <button class="ed-tab" onclick="edTab(this,'ep-features')">Features</button>
+            <button class="ed-tab" onclick="edTab(this,'ep-subs')">Fan Subs</button>
+          </div>
+
+          <!-- LINKS -->
+          <div id="ep-links" class="ed-panel active">
+            <div class="ed-sect">
+              <div class="ed-lbl">Quick Add — Music Links</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="quickAdd('🎵','Spotify','open.spotify.com/...')">+ Spotify</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="quickAdd('🎶','Apple Music','music.apple.com/...')">+ Apple</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="quickAdd('☁️','SoundCloud','soundcloud.com/...')">+ SoundCloud</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="quickAdd('📸','Instagram','instagram.com/...')">+ Instagram</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="quickAdd('🎤','TikTok','tiktok.com/...')">+ TikTok</button>
+              </div>
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Your Links</div>
+              <div class="link-list" id="linkList"></div>
+              <button class="add-link-btn" onclick="addLink()">＋ Add Link</button>
+            </div>
+          </div>
+
+          <!-- PROFILE -->
+          <div id="ep-profile" class="ed-panel">
+            <div class="ed-sect">
+              <div class="ed-lbl">Avatar</div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-size:20px" id="edAvEl">🎵</div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:600;margin-bottom:5px">Choose emoji</div>
+                <div class="em-grid" id="emGrid">
+                  <button class="em-btn active" onclick="setEmoji('🎵',this)">🎵</button>
+                  <button class="em-btn" onclick="setEmoji('🎸',this)">🎸</button>
+                  <button class="em-btn" onclick="setEmoji('🎤',this)">🎤</button>
+                  <button class="em-btn" onclick="setEmoji('🥁',this)">🥁</button>
+                  <button class="em-btn" onclick="setEmoji('🎹',this)">🎹</button>
+                  <button class="em-btn" onclick="setEmoji('🎺',this)">🎺</button>
+                  <button class="em-btn" onclick="setEmoji('🎻',this)">🎻</button>
+                  <button class="em-btn" onclick="setEmoji('⭐',this)">⭐</button>
+                  <button class="em-btn" onclick="setEmoji('🔥',this)">🔥</button>
+                  <button class="em-btn" onclick="setEmoji('💫',this)">💫</button>
+                  <button class="em-btn" onclick="setEmoji('✦',this)">✦</button>
+                  <button class="em-btn" onclick="setEmoji('🌙',this)">🌙</button>
+                </div></div>
+              </div>
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Identity</div>
+              <div style="margin-bottom:9px"><input class="inp" id="edName" placeholder="Your artist name" oninput="syncPreview()"></div>
+              <textarea class="inp" id="edBio" rows="3" placeholder="Short bio or tagline…" style="resize:none;line-height:1.5" oninput="syncPreview()"></textarea>
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Social Handles</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <input class="inp" id="edIg" placeholder="📸 Instagram handle" oninput="syncPreview()">
+                <input class="inp" id="edTw" placeholder="𝕏 Twitter / X" oninput="syncPreview()">
+                <input class="inp" id="edYt" placeholder="▶ YouTube channel" oninput="syncPreview()">
+                <input class="inp" id="edTk" placeholder="🎤 TikTok handle" oninput="syncPreview()">
+                <input class="inp" id="edSp" placeholder="🎵 Spotify artist name" oninput="syncPreview()">
+              </div>
+            </div>
+          </div>
+
+          <!-- VIBE -->
+          <div id="ep-vibe" class="ed-panel">
+            <div class="ed-sect">
+              <div class="ed-lbl">Background Vibe</div>
+              <div class="vibe-grid">
+                <div class="vibe-opt v-mid active" onclick="setVibe('mid',this)"><span>Midnight</span></div>
+                <div class="vibe-opt v-fst" onclick="setVibe('fst',this)"><span>Forest</span></div>
+                <div class="vibe-opt v-ocn" onclick="setVibe('ocn',this)"><span>Ocean</span></div>
+                <div class="vibe-opt v-sst" onclick="setVibe('sst',this)"><span>Sunset</span></div>
+                <div class="vibe-opt v-neon" onclick="setVibe('neon',this)"><span>Neon</span></div>
+                <div class="vibe-opt v-gld" onclick="setVibe('gld',this)"><span>Golden</span></div>
+                <div class="vibe-opt v-rose" onclick="setVibe('rose',this)"><span>Rose</span></div>
+                <div class="vibe-opt v-arc" onclick="setVibe('arc',this)"><span>Arctic</span></div>
+                <div class="vibe-opt v-emb" onclick="setVibe('emb',this)"><span>Ember</span></div>
+              </div>
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Accent Color</div>
+              <div class="ac-row">
+                <div class="ac-btn active" style="background:#f5c842" onclick="setAccent('#f5c842',this)"></div>
+                <div class="ac-btn" style="background:#3eb8ff" onclick="setAccent('#3eb8ff',this)"></div>
+                <div class="ac-btn" style="background:#ff3e9d" onclick="setAccent('#ff3e9d',this)"></div>
+                <div class="ac-btn" style="background:#a8ff3e" onclick="setAccent('#a8ff3e',this)"></div>
+                <div class="ac-btn" style="background:#ff7c3e" onclick="setAccent('#ff7c3e',this)"></div>
+                <div class="ac-btn" style="background:#3effb2" onclick="setAccent('#3effb2',this)"></div>
+                <div class="ac-btn" style="background:#ffffff" onclick="setAccent('#ffffff',this)"></div>
+              </div>
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Effects</div>
+              <div class="tog-row"><span class="tog-lbl">Floating particles</span><div class="tog on" id="togPart" onclick="toggleFx(this,'particles')"></div></div>
+              <div class="tog-row"><span class="tog-lbl">Live viewer count</span><div class="tog on" id="togView" onclick="toggleFx(this,'viewers')"></div></div>
+              <div class="tog-row"><span class="tog-lbl">Earnings badge</span><div class="tog on" id="togEarn" onclick="toggleFx(this,'earnings')"></div></div>
+            </div>
+          </div>
+
+          <!-- FEATURES -->
+          <div id="ep-features" class="ed-panel">
+            <div class="ed-sect">
+              <div class="ed-lbl">Email Capture</div>
+              <div class="tog-row"><span class="tog-lbl">Show email signup</span><div class="tog on" id="togEmail" onclick="toggleFx(this,'emailCap')"></div></div>
+              <input class="inp" id="edEmailTitle" placeholder="Newsletter title e.g. Weekly Drops 📬" oninput="syncPreview()" style="margin-top:6px">
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Tip Button</div>
+              <div class="tog-row"><span class="tog-lbl">Show tip button</span><div class="tog on" id="togTip" onclick="toggleFx(this,'tipBtn')"></div></div>
+              <input class="inp" id="edTipLabel" placeholder="e.g. Buy me a coffee ☕" oninput="syncPreview()" style="margin-top:6px">
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Latest Release Banner</div>
+              <div class="tog-row"><span class="tog-lbl">Show release banner</span><div class="tog" id="togRelease" onclick="toggleFx(this,'release')"></div></div>
+              <input class="inp" id="edRelTitle" placeholder="Release title" style="margin-bottom:7px;margin-top:6px" oninput="syncPreview()">
+              <input class="inp" id="edRelLink" placeholder="Stream / Buy link" oninput="syncPreview()">
+            </div>
+            <div class="ed-sect">
+              <div class="ed-lbl">Verified Badge</div>
+              <div class="tog-row"><span class="tog-lbl">Show verified badge</span><div class="tog" id="togVerif" onclick="toggleFx(this,'verified')"></div></div>
+            </div>
+          </div>
+
+          <!-- FAN SUBS SETUP -->
+          <div id="ep-subs" class="ed-panel">
+            <div class="ed-sect">
+              <div class="ed-lbl">Fan Subscription Tiers</div>
+              <p style="font-size:12px;color:var(--soft);margin-bottom:12px;line-height:1.6">Set up monthly tiers. Fans subscribe and pay automatically via Stripe. You keep 95%.</p>
+              <div id="tierList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+              <button class="btn btn-gold btn-sm btn-full" onclick="addTier()">+ Add Fan Tier</button>
+            </div>
+            <div class="ed-sect">
+              <div style="background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);border-radius:7px;padding:14px;font-size:12px;color:var(--soft);line-height:1.7">
+                💛 <strong style="color:var(--gold)">5% ERND fee</strong> only on earnings. If you earn $277/mo from fans, ERND takes $13.85. Everything else is yours — paid directly by Stripe.
+              </div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <div class="save-status" id="saveStatus">✦ All changes saved</div>
+            <button class="btn btn-ghost btn-sm" onclick="viewPage()">View Page ↗</button>
+            <button class="btn btn-gold btn-sm" onclick="saveProfile()">Save</button>
+          </div>
+        </div>
+        <!-- Right: preview -->
+        <div class="preview-area" style="width:320px;flex-shrink:0;">
+          <div class="preview-label">LIVE PREVIEW</div>
+          <div class="p-wrap">
+            <div class="p-notch"></div>
+            <div id="bioPreview" class="bio-preview vibe-mid">
+              <div class="bio-bg"></div>
+              <canvas id="bioCanvas" class="bio-canvas"></canvas>
+              <div class="bio-inner">
+                <div class="b-av"><span id="prevEmoji">🎵</span></div>
+                <div class="b-name" id="prevName">Your Name</div>
+                <div class="b-bio" id="prevBio">Your bio goes here</div>
+                <div class="b-earning" id="prevEarning"><div class="b-earn-dot"></div><span id="prevEarnTxt">$277/mo from fans</span></div>
+                <div id="prevLinks" style="width:100%"></div>
+                <div class="b-made">Made with ERND</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MUSIC PANEL -->
+      <div id="pv-music" class="pv">
+        <div class="pv-hdr">
+          <div><div class="pv-title">Music & Releases</div><div class="pv-sub">Add your streaming links, latest release, and tour dates</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;max-width:600px">
+          <div class="ed-lbl">Streaming Platforms</div>
+          <div class="stream-list" id="streamList">
+            <div class="stream-item"><div class="stream-icon">🎵</div><input class="inp" placeholder="Spotify artist or track URL"></div>
+            <div class="stream-item"><div class="stream-icon">🎶</div><input class="inp" placeholder="Apple Music URL"></div>
+            <div class="stream-item"><div class="stream-icon">☁️</div><input class="inp" placeholder="SoundCloud URL"></div>
+            <div class="stream-item"><div class="stream-icon">🌊</div><input class="inp" placeholder="Tidal URL"></div>
+            <div class="stream-item"><div class="stream-icon">🎧</div><input class="inp" placeholder="Deezer URL"></div>
+            <div class="stream-item"><div class="stream-icon">🏕️</div><input class="inp" placeholder="Bandcamp URL"></div>
+          </div>
+          <button class="btn btn-gold btn-sm" style="margin-top:12px" onclick="toast('Streaming links saved!','ok')">Save Streaming Links</button>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;max-width:600px">
+          <div class="ed-lbl">Latest Release Banner</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+            <input class="inp" placeholder="Release title e.g. Lost in the Rhythm">
+            <input class="inp" placeholder="Type e.g. SINGLE · EP · ALBUM">
+            <input class="inp" placeholder="Stream / Buy link">
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="toast('Release banner saved!','ok')">Save Release Banner</button>
+        </div>
+      </div>
+
+      <!-- FANS PANEL -->
+      <div id="pv-fans" class="pv">
+        <div class="pv-hdr">
+          <div><div class="pv-title">Fan Subscriptions</div><div class="pv-sub">$277/mo from 43 fans · 5% ERND fee · $262.85 net</div></div>
+          <button class="btn btn-gold btn-sm" onclick="showPanel('editor');edTab(document.querySelector('[onclick*=ep-subs]'),'ep-subs')">+ Add Tier</button>
+        </div>
+        <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">43</div><div class="sb-l">Active fans</div><div class="sb-t up">↑ 8 this month</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$277</div><div class="sb-l">Monthly recurring</div><div class="sb-t up">↑ $42 vs last month</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$262</div><div class="sb-l">Net after 5% fee</div><div class="sb-t up">Paid via Stripe</div></div>
+        </div>
+        <div id="fanList">
+          <div class="fan-row"><div class="fan-av">👩</div><div class="fan-info"><div class="fan-name">Sarah M.</div><div class="fan-meta">Joined today · Day One Fan</div></div><div class="fan-tier" style="background:rgba(245,200,66,.1);color:var(--gold)">$7/mo</div><div class="fan-earn">$6.65</div></div>
+          <div class="fan-row"><div class="fan-av">👨</div><div class="fan-info"><div class="fan-name">James K.</div><div class="fan-meta">Joined yesterday · Ride or Die</div></div><div class="fan-tier" style="background:rgba(62,255,178,.1);color:var(--green)">$15/mo</div><div class="fan-earn">$14.25</div></div>
+          <div class="fan-row"><div class="fan-av">👩‍🦱</div><div class="fan-info"><div class="fan-name">Priya D.</div><div class="fan-meta">Fan since March · Ride or Die</div></div><div class="fan-tier" style="background:rgba(62,255,178,.1);color:var(--green)">$15/mo</div><div class="fan-earn">$14.25</div></div>
+          <div class="fan-row"><div class="fan-av">👨‍🎤</div><div class="fan-info"><div class="fan-name">Mike T.</div><div class="fan-meta">Fan since Feb · Coffee Fan</div></div><div class="fan-tier" style="background:rgba(62,184,255,.1);color:var(--blue)">$3/mo</div><div class="fan-earn">$2.85</div></div>
+          <div class="fan-row"><div class="fan-av">🧑</div><div class="fan-info"><div class="fan-name">Luna V.</div><div class="fan-meta">Fan since Feb · Day One Fan</div></div><div class="fan-tier" style="background:rgba(245,200,66,.1);color:var(--gold)">$7/mo</div><div class="fan-earn">$6.65</div></div>
+          <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);padding:14px">+ 38 more fans</div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS PANEL -->
+      <div id="pv-products" class="pv">
+        <div class="pv-hdr">
+          <div><div class="pv-title">Digital Products</div><div class="pv-sub">$384 total sales · 8% ERND fee · $353.28 net</div></div>
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-product')">+ Upload Product</button>
+        </div>
+        <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">6</div><div class="sb-l">Products listed</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">791</div><div class="sb-l">Total sales</div><div class="sb-t up">↑ 47 this week</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$353</div><div class="sb-l">Net earnings</div></div>
+        </div>
+        <div class="listings" id="productsGrid"></div>
+      </div>
+
+      <!-- DEALS PANEL -->
+      <div id="pv-deals" class="pv">
+        <div class="pv-hdr">
+          <div><div class="pv-title">Brand Deals</div><div class="pv-sub">3 active opportunities · 10% ERND fee on closed deals</div></div>
+        </div>
+        <div class="order-list">
+          <div class="order-item"><div class="o-icon">👗</div><div class="o-info"><div class="o-title">Fashion Brand — Summer collection</div><div class="o-meta">Music · Lifestyle · 5K+ followers · $200–$500/post</div></div><div class="o-status s-pend">OPEN</div><button class="btn btn-gold btn-sm" onclick="toast('Application sent!','ok')">Apply →</button></div>
+          <div class="order-item"><div class="o-icon">🎧</div><div class="o-info"><div class="o-title">Audio Brand — Studio headphone review</div><div class="o-meta">Music Production · 2K+ followers · $300–$800/post</div></div><div class="o-status s-pend">OPEN</div><button class="btn btn-gold btn-sm" onclick="toast('Application sent!','ok')">Apply →</button></div>
+          <div class="order-item"><div class="o-icon">💻</div><div class="o-info"><div class="o-title">Software Co. — Creative tools review</div><div class="o-meta">Creative · Any size · $150–$400/post</div></div><div class="o-status s-live">APPLIED</div><div class="o-amt">$400</div></div>
+        </div>
+      </div>
+
+      <!-- EARNINGS PANEL -->
+      <div id="pv-earnings" class="pv">
+        <div class="pv-hdr"><div><div class="pv-title">All Earnings</div><div class="pv-sub">Every dollar ERND has helped you make</div></div></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$277</div><div class="sb-l">Fan subs / mo</div><div class="sb-t up">↑ 18%</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$384</div><div class="sb-l">Product sales</div><div class="sb-t up">↑ 32%</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$400</div><div class="sb-l">Brand deal (pending)</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">$1,061</div><div class="sb-l">Total this month</div><div class="sb-t up">↑ 24%</div></div>
+        </div>
+        <div class="order-list">
+          <div class="order-item"><div class="o-icon">💛</div><div class="o-info"><div class="o-title">Fan subscription — Sarah M.</div><div class="o-meta">$7/mo tier · Today</div></div><div class="o-status s-done">PAID</div><div class="o-amt">$6.65</div></div>
+          <div class="order-item"><div class="o-icon">🥁</div><div class="o-info"><div class="o-title">808 Drum Kit Vol.2 sold</div><div class="o-meta">Digital download · Today</div></div><div class="o-status s-done">PAID</div><div class="o-amt">$11.04</div></div>
+          <div class="order-item"><div class="o-icon">🤝</div><div class="o-info"><div class="o-title">Brand deal — Software Co.</div><div class="o-meta">Creative tools review · Pending approval</div></div><div class="o-status s-pend">PENDING</div><div class="o-amt">$360</div></div>
+          <div class="order-item"><div class="o-icon">💛</div><div class="o-info"><div class="o-title">Fan subscription — James K.</div><div class="o-meta">$15/mo tier · Yesterday</div></div><div class="o-status s-done">PAID</div><div class="o-amt">$14.25</div></div>
+        </div>
+      </div>
+
+      <!-- CRM PANEL -->
+      <div id="pv-crm" class="pv">
+        <div class="pv-hdr">
+          <div><div class="pv-title">Creator CRM</div><div class="pv-sub">134 subscribers · Your owned audience</div></div>
+          <button class="btn btn-gold btn-sm" onclick="toast('Broadcast sent to 134 subscribers!','ok')">📣 Broadcast</button>
+        </div>
+        <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">134</div><div class="sb-l">Total subscribers</div><div class="sb-t up">↑ 12 this week</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">43</div><div class="sb-l">Paying fans</div><div class="sb-t up">32% of list</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">91</div><div class="sb-l">Email subscribers</div></div>
+        </div>
+        <div id="crmList">
+          <div class="fan-row"><div class="fan-av">👩</div><div class="fan-info"><div class="fan-name">Sarah M.</div><div class="fan-meta">Fan · $7/mo · Today</div></div><div class="fan-tier" style="background:rgba(245,200,66,.1);color:var(--gold)">FAN</div></div>
+          <div class="fan-row"><div class="fan-av">👨</div><div class="fan-info"><div class="fan-name">James K.</div><div class="fan-meta">Bought drum kit · Yesterday</div></div><div class="fan-tier" style="background:rgba(62,255,178,.1);color:var(--green)">BUYER</div></div>
+          <div class="fan-row"><div class="fan-av">👩‍🦱</div><div class="fan-info"><div class="fan-name">Priya D.</div><div class="fan-meta">Fan · $15/mo · 2 days ago</div></div><div class="fan-tier" style="background:rgba(245,200,66,.1);color:var(--gold)">FAN</div></div>
+          <div class="fan-row"><div class="fan-av">👨</div><div class="fan-info"><div class="fan-name">Mike T.</div><div class="fan-meta">Email subscriber · 3 days ago</div></div><div class="fan-tier" style="background:rgba(62,184,255,.1);color:var(--blue)">EMAIL</div></div>
+          <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);padding:14px">+ 130 more in your CRM</div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PANEL -->
+      <div id="pv-analytics" class="pv">
+        <div class="pv-hdr"><div><div class="pv-title">Analytics</div><div class="pv-sub">Your page performance this week</div></div></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">2,847</div><div class="sb-l">Page views</div><div class="sb-t up">↑ 23%</div></div>
+          <div class="stat-box"><div class="sb-v" style="color:var(--gold)">847</div><div class="sb-l">Link clicks</div><div class="sb-t up">↑ 15%</div></div>
+          <div class="stat-box"><div class="sb-v">29.8%</div><div class="sb-l">Click rate</div><div class="sb-t up">↑ 3pts</div></div>
+          <div class="stat-box"><div class="sb-v">📱 84%</div><div class="sb-l">Mobile visitors</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:14px">
+          <div class="ed-lbl">Traffic Sources</div>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="flex:1">Instagram</span><div style="flex:2;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:54%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);width:28px;text-align:right">54%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="flex:1">TikTok</span><div style="flex:2;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:28%;height:100%;background:var(--pink);border-radius:2px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--pink);width:28px;text-align:right">28%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="flex:1">Twitter/X</span><div style="flex:2;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:12%;height:100%;background:var(--blue);border-radius:2px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);width:28px;text-align:right">12%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="flex:1">Direct</span><div style="flex:2;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:6%;height:100%;background:var(--green);border-radius:2px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);width:28px;text-align:right">6%</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-area -->
+  </div><!-- /app-body -->
+</div>
+
+<!-- PUBLIC PAGE -->
+<div id="scr-page" class="screen" style="min-height:100vh;background:var(--black);display:flex;align-items:center;justify-content:center;">
+  <div id="fullBg" style="position:fixed;inset:0;z-index:-2;"></div>
+  <canvas id="fullCanvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;"></canvas>
+  <button style="position:fixed;top:16px;left:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:7px 13px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;z-index:10;font-family:'JetBrains Mono',monospace" onclick="showScreen('scr-app')">← Dashboard</button>
+  <div style="width:100%;max-width:440px;padding:60px 22px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
+    <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:14px;box-shadow:0 0 0 4px rgba(255,255,255,.08)"><span id="fpEmoji">🎵</span></div>
+    <div style="font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;text-align:center;margin-bottom:8px" id="fpName">Artist Name</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.5);text-align:center;max-width:320px;line-height:1.6;margin-bottom:16px" id="fpBio">Your bio</div>
+    <div style="display:flex;align-items:center;gap:5px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:22px"><div style="width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-pip 1.5s infinite"></div>$277/mo from 43 fans</div>
+    <div id="fpLinks" style="width:100%;display:flex;flex-direction:column;gap:9px;"></div>
+    <div style="margin-top:32px;font-size:10px;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace">Made with ERND</div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-product">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeModal('modal-product')">×</button>
+    <div class="modal-h">Upload Digital Product</div>
+    <div class="modal-sub">Upload a file, set a price. Buyers get instant download. You keep 92%.</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div><div class="lbl">Product Name</div><input class="inp" placeholder="e.g. 808 Drum Kit Vol.3"></div>
+      <div><div class="lbl">Price ($)</div><input class="inp" type="number" placeholder="12.00"></div>
+      <div><div class="lbl">Product Emoji / Cover</div><input class="inp" placeholder="e.g. 🥁 or 🎛️"></div>
+      <div><div class="lbl">File URL (Google Drive, Dropbox etc.)</div><input class="inp" placeholder="https://drive.google.com/..."></div>
+      <button class="btn btn-gold btn-full" onclick="addProduct()">Upload Product →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════
+const DB='ernd2_users',SES='ernd2_session';
+const getDB=()=>JSON.parse(localStorage.getItem(DB)||'{}');
+const putDB=d=>localStorage.setItem(DB,JSON.stringify(d));
+const getSes=()=>localStorage.getItem(SES);
+const setSes=h=>localStorage.setItem(SES,h);
+const clrSes=()=>localStorage.removeItem(SES);
+
+let CU=null,userRole='musician',savedVibe='mid',savedAccent='#f5c842',saveTimer=null;
+let S={emoji:'🎵',name:'',bio:'',vibe:'mid',accent:'#f5c842',ig:'',tw:'',yt:'',tk:'',sp:'',links:[],
+  particles:true,viewers:true,earnings:true,emailCap:true,emailTitle:'',
+  tipBtn:true,tipLabel:'',release:false,relTitle:'',relLink:'',verified:false,
+  tiers:[{icon:'☕',name:'Coffee Fan',price:3},{icon:'🎵',name:'Day One Fan',price:7},{icon:'🏆',name:'Ride or Die',price:15}]};
+
+const DEMO_PRODUCTS=[
+  {emoji:'🥁',title:'808 Drum Kit Vol.2',price:12,sold:247,cat:'Kit'},
+  {emoji:'🎛️',title:'Lo-Fi Preset Pack',price:18,sold:183,cat:'Preset'},
+  {emoji:'🎹',title:'Neo-Soul Chords',price:9,sold:94,cat:'MIDI'},
+  {emoji:'📚',title:'Mixing Guide PDF',price:7,sold:61,cat:'Guide'},
+  {emoji:'🎙️',title:'Vocal Chains Pack',price:15,sold:129,cat:'Chain'},
+  {emoji:'🔊',title:'Bass Sample Kit',price:11,sold:77,cat:'Kit'},
+];
+
+// ── SCREENS ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.add('active');
+  if(id==='scr-app'){renderAll();setTimeout(initPreviewCanvas,100);}
+  if(id==='scr-land'){setTimeout(initBgCanvas,200);}
+  if(id==='scr-page'){renderPublicPage();setTimeout(initFullCanvas,100);}
+}
+function showPanel(id){
+  document.querySelectorAll('.pv').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('pv-'+id);if(el)el.classList.add('active');
+  document.querySelectorAll('.sb-btn').forEach(b=>{
+    if(b.textContent.toLowerCase().trim().includes(id.replace('-',' ').toLowerCase()))b.classList.add('active');
+  });
+  if(id==='products')renderProducts();
+}
+function showAuth(m){showScreen('scr-auth');switchTab(m==='login'?'login':'join');}
+function viewPage(){saveProfile();showScreen('scr-page');}
+function openModal(id){document.getElementById(id)?.classList.add('open');}
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
+
+// ── AUTH ──
+function switchTab(t){
+  document.getElementById('joinF').style.display=t==='join'?'flex':'none';
+  document.getElementById('loginF').style.display=t==='login'?'flex':'none';
+  document.getElementById('tabJoin').classList.toggle('active',t==='join');
+  document.getElementById('tabLogin').classList.toggle('active',t==='login');
+  document.getElementById('authH').textContent=t==='join'?'Create Your Page':'Welcome Back';
+  document.getElementById('authSb').textContent=t==='join'?'Free forever · No credit card · 2 min setup':'Sign back into your artist page';
+  document.getElementById('authSwTxt').textContent=t==='join'?'Already have a page?':'New to ERND?';
+  document.getElementById('authSwLink').textContent=t==='join'?' Sign in':' Join free';
+  document.getElementById('authSwLink').onclick=()=>switchTab(t==='join'?'login':'join');
+}
+function setRole(r,btn){userRole=r;document.querySelectorAll('.role-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function doJoin(){
+  const name=document.getElementById('jName').value.trim();
+  const handle=document.getElementById('jHandle').value.trim();
+  const email=document.getElementById('jEmail').value.trim();
+  const pw=document.getElementById('jPw').value;
+  if(!name||!handle||!email||!pw)return toast('Fill in all fields','err');
+  if(pw.length<6)return toast('Password needs 6+ chars','err');
+  const db=getDB();
+  if(Object.values(db).find(u=>u.email===email))return toast('Email already registered','err');
+  db[handle]={handle,name,email,pw,role:userRole,emoji:'🎵',bio:'Making music that hits different ✦',
+    vibe:'mid',accent:'#f5c842',links:[],tiers:S.tiers,
+    joined:new Date().toISOString()};
+  putDB(db);setSes(handle);loadUser(handle);
+  toast('Welcome to ERND, '+name+'! 🎵','ok');showScreen('scr-app');
+}
+function doLogin(){
+  const email=document.getElementById('lgEmail').value.trim();
+  const pw=document.getElementById('lgPw').value;
+  if(!email||!pw)return toast('Enter email and password','err');
+  const db=getDB();
+  const u=Object.values(db).find(u=>u.email===email&&u.pw===pw);
+  if(!u)return toast('Wrong email or password','err');
+  setSes(u.handle);loadUser(u.handle);toast('Welcome back! 🎵','ok');showScreen('scr-app');
+}
+function demoLogin(){
+  const db=getDB();
+  if(!db['demo_artist']){
+    db['demo_artist']={handle:'demo_artist',name:'Alex Rivera',email:'demo@ernd.io',pw:'demo123',
+      role:'musician',emoji:'🎵',bio:'Making music that hits different ✦\nHouston · Independent',
+      vibe:'mid',accent:'#f5c842',
+      ig:'alexrivera',tw:'alexrivera',yt:'alexrivera',tk:'alexrivera',sp:'alexrivera',
+      links:[
+        {icon:'🎵',title:'Latest Single — Spotify',url:'open.spotify.com/...'},
+        {icon:'🥁',title:'808 Drum Kit — $12',url:'ernd.io/demo_artist/products'},
+        {icon:'💛',title:'Join my fan club',url:'ernd.io/demo_artist/fans'},
+        {icon:'📸',title:'Instagram',url:'instagram.com/alexrivera'},
+      ],
+      tiers:[{icon:'☕',name:'Coffee Fan',price:3},{icon:'🎵',name:'Day One Fan',price:7},{icon:'🏆',name:'Ride or Die',price:15}],
+      joined:new Date(Date.now()-60*86400000).toISOString()};
+    putDB(db);
+  }
+  setSes('demo_artist');loadUser('demo_artist');toast('Demo artist loaded 🎵','info');showScreen('scr-app');
+}
+function doLogout(){clrSes();CU=null;toast('Signed out','info');showScreen('scr-land');}
+
+function loadUser(handle){
+  const db=getDB();const u=db[handle];if(!u)return;
+  CU=handle;
+  const init=u.name.charAt(0).toUpperCase();
+  document.getElementById('chipAv').textContent=init;
+  document.getElementById('chipName').textContent=u.name.split(' ')[0];
+  Object.assign(S,{emoji:u.emoji||'🎵',name:u.name,bio:u.bio||'',vibe:u.vibe||'mid',accent:u.accent||'#f5c842',
+    ig:u.ig||'',tw:u.tw||'',yt:u.yt||'',tk:u.tk||'',sp:u.sp||'',
+    links:JSON.parse(JSON.stringify(u.links||[])),
+    tiers:u.tiers||S.tiers});
+  document.getElementById('edName').value=S.name;
+  document.getElementById('edBio').value=S.bio;
+  document.getElementById('edIg').value=S.ig;
+  document.getElementById('edTw').value=S.tw;
+  document.getElementById('edYt').value=S.yt;
+  document.getElementById('edTk').value=S.tk;
+  document.getElementById('edSp').value=S.sp||'';
+  // vibe + accent
+  document.querySelectorAll('.vibe-opt').forEach(v=>v.classList.remove('active'));
+  document.querySelector('.v-'+S.vibe)?.classList.add('active');
+  document.getElementById('bioPreview').className='bio-preview vibe-'+S.vibe;
+  document.documentElement.style.setProperty('--gold',S.accent);
+  document.getElementById('edAvEl').textContent=S.emoji;
+  renderLinkEditor();renderTiers();syncPreview();
+}
+
+// ── SAVE ──
+function saveProfile(){
+  if(!CU)return;
+  const db=getDB();
+  Object.assign(db[CU],{name:S.name,bio:S.bio,emoji:S.emoji,vibe:S.vibe,accent:S.accent,
+    ig:S.ig,tw:S.tw,yt:S.yt,tk:S.tk,sp:S.sp,links:S.links,tiers:S.tiers});
+  putDB(db);
+  const el=document.getElementById('saveStatus');if(el)el.textContent='✓ Saved';
+  toast('Page saved!','ok');
+  setTimeout(()=>{const e=document.getElementById('saveStatus');if(e)e.textContent='✦ All changes saved';},2000);
+}
+function autoSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveProfile,1400);const e=document.getElementById('saveStatus');if(e)e.textContent='… saving';}
+
+// ── EDITOR ──
+function edTab(btn,id){
+  document.querySelectorAll('.ed-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ed-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(id)?.classList.add('active');
+}
+function setEmoji(e,btn){S.emoji=e;document.querySelectorAll('.em-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('edAvEl').textContent=e;syncPreview();autoSave();}
+function setVibe(v,el){S.vibe=v;document.querySelectorAll('.vibe-opt').forEach(o=>o.classList.remove('active'));el.classList.add('active');document.getElementById('bioPreview').className='bio-preview vibe-'+v;initPreviewCanvas();autoSave();}
+function setAccent(c,el){S.accent=c;document.querySelectorAll('.ac-btn').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.documentElement.style.setProperty('--gold',c);syncPreview();autoSave();}
+function toggleFx(el,k){el.classList.toggle('on');S[k]=el.classList.contains('on');syncPreview();autoSave();}
+
+// ── LINKS ──
+function renderLinkEditor(){
+  const list=document.getElementById('linkList');if(!list)return;
+  list.innerHTML=S.links.map((l,i)=>`
+    <div class="link-item">
+      <div class="link-fields">
+        <input placeholder="Link title" value="${esc(l.title)}" oninput="updateLink(${i},'title',this.value)">
+        <input placeholder="https://..." value="${esc(l.url)}" oninput="updateLink(${i},'url',this.value)">
+        <input placeholder="Icon emoji" value="${esc(l.icon)}" oninput="updateLink(${i},'icon',this.value)" style="max-width:100px">
+      </div>
+      <button class="link-del" onclick="deleteLink(${i})">×</button>
+    </div>`).join('');
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function updateLink(i,k,v){S.links[i][k]=v;syncPreview();autoSave();}
+function addLink(){S.links.push({icon:'🔗',title:'New Link',url:''});renderLinkEditor();syncPreview();autoSave();}
+function deleteLink(i){S.links.splice(i,1);renderLinkEditor();syncPreview();autoSave();}
+function quickAdd(icon,title,url){S.links.push({icon,title,url});renderLinkEditor();syncPreview();autoSave();toast(title+' added!','ok');}
+
+// ── TIERS ──
+function renderTiers(){
+  const w=document.getElementById('tierList');if(!w)return;
+  w.innerHTML=S.tiers.map((t,i)=>`
+    <div style="background:var(--raised);border:1px solid var(--border);border-radius:6px;padding:10px;display:flex;gap:8px;align-items:center">
+      <input style="width:36px;background:transparent;border:none;font-size:18px;text-align:center" value="${t.icon}" oninput="S.tiers[${i}].icon=this.value;syncPreview()">
+      <input class="inp" style="flex:1;padding:7px 10px;font-size:12px" value="${esc(t.name)}" placeholder="Tier name" oninput="S.tiers[${i}].name=this.value;syncPreview()">
+      <div style="display:flex;align-items:center;gap:3px;background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:7px 10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">$</span><input style="width:36px;background:transparent;border:none;color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace" type="number" value="${t.price}" oninput="S.tiers[${i}].price=+this.value;syncPreview()"></div>
+      <button style="background:none;color:var(--pink);font-size:15px;opacity:.4;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4" onclick="S.tiers.splice(${i},1);renderTiers();syncPreview()">×</button>
+    </div>`).join('');
+}
+function addTier(){S.tiers.push({icon:'🌟',name:'New Tier',price:5});renderTiers();syncPreview();}
+
+// ── SYNC PREVIEW ──
+function syncPreview(){
+  S.name=document.getElementById('edName')?.value||S.name;
+  S.bio=document.getElementById('edBio')?.value||S.bio;
+  S.ig=document.getElementById('edIg')?.value||S.ig;
+  S.tw=document.getElementById('edTw')?.value||S.tw;
+  S.yt=document.getElementById('edYt')?.value||S.yt;
+  S.tk=document.getElementById('edTk')?.value||S.tk;
+  S.sp=document.getElementById('edSp')?.value||S.sp;
+  S.emailTitle=document.getElementById('edEmailTitle')?.value||'';
+  S.tipLabel=document.getElementById('edTipLabel')?.value||'';
+
+  document.getElementById('prevEmoji').textContent=S.emoji;
+  document.getElementById('prevName').textContent=S.name||'Your Name';
+  document.getElementById('prevBio').innerHTML=(S.bio||'Your bio goes here').replace(/\n/g,'<br>');
+  document.getElementById('prevEarning').style.display=S.earnings?'flex':'none';
+
+  // Links
+  const linksEl=document.getElementById('prevLinks');if(!linksEl)return;
+  linksEl.innerHTML='';
+  S.links.slice(0,5).forEach(l=>{
+    const d=document.createElement('div');d.className='b-link';
+    d.innerHTML=`<div class="bl-icon">${l.icon||'🔗'}</div><div class="bl-text"><div class="bl-title">${esc(l.title)}</div></div><div class="bl-arrow">›</div>`;
+    linksEl.appendChild(d);
+  });
+}
+
+// ── PRODUCTS ──
+function renderProducts(){
+  const g=document.getElementById('productsGrid');if(!g)return;
+  g.innerHTML=DEMO_PRODUCTS.map(p=>`
+    <div class="listing-card">
+      <div class="lc-thumb" style="background:rgba(245,200,66,.06)">
+        ${p.emoji}
+        <div class="lc-cat" style="color:var(--gold)">${p.cat}</div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-title">${p.title}</div>
+        <div class="lc-meta">
+          <div class="lc-price">$${p.price}</div>
+        </div>
+        <div class="lc-footer">
+          <div class="lc-creator">${p.sold} sold</div>
+          <div class="lc-rating">★ 4.9</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function addProduct(){
+  closeModal('modal-product');
+  toast('Product uploaded! Goes live on your page 🛒','ok');
+}
+
+// ── PUBLIC PAGE ──
+function renderPublicPage(){
+  document.getElementById('fullBg').className='';
+  document.getElementById('fullBg').style.cssText=`position:fixed;inset:0;z-index:-2;`;
+  // Apply vibe bg
+  const vibeMap={mid:'radial-gradient(ellipse at 50% -10%,#2d1b69 0%,#0a0a1a 55%)',
+    fst:'radial-gradient(ellipse at 50% -10%,#1a3a1a 0%,#040d04 55%)',
+    ocn:'radial-gradient(ellipse at 50% -10%,#0d3b5e 0%,#020b18 55%)',
+    sst:'radial-gradient(ellipse at 50% -10%,#5e0d1a 0%,#150004 55%)',
+    neon:'radial-gradient(ellipse at 50% -10%,#2a0060 0%,#060010 55%)',
+    gld:'radial-gradient(ellipse at 50% -10%,#3d2800 0%,#0c0700 55%)',
+    rose:'radial-gradient(ellipse at 50% -10%,#620035 0%,#120005 55%)',
+    arc:'radial-gradient(ellipse at 50% -10%,#102a40 0%,#050a10 55%)',
+    emb:'radial-gradient(ellipse at 50% -10%,#601800 0%,#100800 55%)'};
+  document.getElementById('fullBg').style.background=vibeMap[S.vibe]||vibeMap.mid;
+  document.getElementById('fpEmoji').textContent=S.emoji;
+  document.getElementById('fpName').textContent=S.name||'Artist Name';
+  document.getElementById('fpBio').innerHTML=(S.bio||'').replace(/\n/g,'<br>');
+  const fpLinks=document.getElementById('fpLinks');fpLinks.innerHTML='';
+  S.links.forEach(l=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;cursor:pointer;margin-bottom:8px;transition:all .2s;';
+    d.innerHTML=`<div style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:10px;flex-shrink:0">${l.icon||'🔗'}</div><div style="flex:1;font-size:12px;font-weight:500">${esc(l.title)}</div><div style="color:rgba(255,255,255,.2);font-size:13px">›</div>`;
+    d.onclick=()=>{if(l.url)window.open('https://'+l.url.replace(/^https?:\/\//,''),'_blank');};
+    fpLinks.appendChild(d);
+  });
+}
+
+// ── RENDER ALL ──
+function renderAll(){renderProducts();}
+
+// ── CANVAS ──
+const VCOLS={mid:'160,120,255',fst:'80,200,80',ocn:'80,160,255',sst:'255,120,80',neon:'200,60,255',gld:'240,180,60',rose:'255,60,140',arc:'80,180,255',emb:'255,140,60'};
+let pAnim,fAnim,pParticles=[],fParticles=[];
+function mkP(w,h){return{x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.22,vy:-(Math.random()*.3+.05),r:Math.random()*1.6+.4,a:Math.random()*.45+.1};}
+function initPreviewCanvas(){
+  const page=document.getElementById('bioPreview'),cv=document.getElementById('bioCanvas');if(!cv||!page)return;
+  const ctx=cv.getContext('2d');cv.width=page.offsetWidth||270;cv.height=page.offsetHeight||580;
+  if(!S.particles){cancelAnimationFrame(pAnim);ctx.clearRect(0,0,cv.width,cv.height);return;}
+  pParticles=Array.from({length:35},()=>mkP(cv.width,cv.height));
+  cancelAnimationFrame(pAnim);
+  (function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const col=VCOLS[S.vibe]||'200,255,87';
+    pParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-5){p.y=cv.height+5;p.x=Math.random()*cv.width;}if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${col},${p.a})`;ctx.fill();});
+    pAnim=requestAnimationFrame(loop);
+  })();
+}
+function initFullCanvas(){
+  const cv=document.getElementById('fullCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d');cv.width=window.innerWidth;cv.height=window.innerHeight;
+  fParticles=Array.from({length:60},()=>mkP(cv.width,cv.height));
+  cancelAnimationFrame(fAnim);
+  (function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const col=VCOLS[S.vibe]||'200,255,87';
+    fParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-5){p.y=cv.height+5;p.x=Math.random()*cv.width;}if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${col},${p.a})`;ctx.fill();});
+    fAnim=requestAnimationFrame(loop);
+  })();
+}
+// Bg canvas for landing
+function initBgCanvas(){
+  const cv=document.getElementById('bgCv');if(!cv)return;
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const ctx=cv.getContext('2d');
+  const nodes=Array.from({length:50},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.5+.5,col:['#f5c842','#3effb2','#3eb8ff','#ff3e9d'][Math.floor(Math.random()*4)]}));
+  (function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>cv.width)n.vx*=-1;if(n.y<0||n.y>cv.height)n.vy*=-1;});
+    nodes.forEach((a,i)=>nodes.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<100){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(245,200,66,${.03*(1-d/100)})`;ctx.lineWidth=.5;ctx.stroke();}}));
+    nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=n.col+'50';ctx.fill();});
+    requestAnimationFrame(loop);
+  })();
+}
+
+// ── FAQ ──
+function toggleFaq(btn){btn.parentElement.classList.toggle('open');}
+
+// ── TOAST ──
+let tT;
+function toast(msg,type='info'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(tT);tT=setTimeout(()=>el.className='',2800);}
+
+// ── FOUNDING SPOTS LIVE COUNTDOWN ──
+let spots=43;
+setInterval(()=>{if(Math.random()<.02&&spots>10){spots--;['spotsCount','spotsCount2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=spots;});}},15000);
+
+// ── INIT ──
+// Inject bg canvas onto landing
+window.addEventListener('load',()=>{
+  const bgCv=document.createElement('canvas');
+  bgCv.id='bgCv';bgCv.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;';
+  document.getElementById('scr-land').appendChild(bgCv);
+  const ses=getSes();
+  if(ses){const db=getDB();if(db[ses]){loadUser(ses);showScreen('scr-app');return;}}
+  showScreen('scr-land');setTimeout(initBgCanvas,200);
+});
+window.addEventListener('resize',()=>{
+  if(document.getElementById('scr-app').classList.contains('active'))initPreviewCanvas();
+  if(document.getElementById('scr-page').classList.contains('active'))initFullCanvas();
+});
+</script>
+</body>
+</html>
